@@ -2229,11 +2229,17 @@ static int qpnp_hap_auto_mode_config(struct qpnp_hap *hap, int time_ms)
 /* enable interface from timed output class */
 static void qpnp_hap_td_enable(struct timed_output_dev *dev, int time_ms)
 {
-	struct qpnp_hap *hap = container_of(dev, struct qpnp_hap,
-					 timed_dev);
-	bool state = !!time_ms;
+
+	struct qpnp_hap *hap = container_of(work, struct qpnp_hap,
+					 td_work);
+	int rc, time_ms;
+	bool state;
+
+	spin_lock(&hap->td_lock);
+	time_ms = hap->td_time_ms;
+	spin_unlock(&hap->td_lock);
+	state = !!time_ms;
 	ktime_t rem;
-	int rc;
 
 	if (time_ms < 0)
 		return;
