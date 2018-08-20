@@ -425,8 +425,8 @@ static void domain_dirty_limits(struct dirty_throttle_control *dtc)
 	dtc->bg_thresh = bg_thresh;
 
 	/* we should eventually report the domain in the TP */
-	if (!gdtc)
-		trace_global_dirty_state(bg_thresh, thresh);
+//	if (!gdtc)
+//		trace_global_dirty_state(bg_thresh, thresh);
 }
 
 /**
@@ -1319,7 +1319,7 @@ static void wb_update_dirty_ratelimit(struct dirty_throttle_control *dtc,
 	wb->dirty_ratelimit = max(dirty_ratelimit, 1UL);
 	wb->balanced_dirty_ratelimit = balanced_dirty_ratelimit;
 
-	trace_bdi_dirty_ratelimit(wb, dirty_rate, task_ratelimit);
+//	trace_bdi_dirty_ratelimit(wb, dirty_rate, task_ratelimit);
 }
 
 static void __wb_update_bandwidth(struct dirty_throttle_control *gdtc,
@@ -1715,7 +1715,7 @@ static void balance_dirty_pages(struct address_space *mapping,
 		 * do a reset, as it may be a light dirtier.
 		 */
 		if (pause < min_pause) {
-			trace_balance_dirty_pages(wb,
+/*			trace_balance_dirty_pages(wb,
 						  sdtc->thresh,
 						  sdtc->bg_thresh,
 						  sdtc->dirty,
@@ -1726,7 +1726,7 @@ static void balance_dirty_pages(struct address_space *mapping,
 						  pages_dirtied,
 						  period,
 						  min(pause, 0L),
-						  start_time);
+						  start_time); */
 			if (pause < -HZ) {
 				current->dirty_paused_when = now;
 				current->nr_dirtied = 0;
@@ -1744,7 +1744,7 @@ static void balance_dirty_pages(struct address_space *mapping,
 		}
 
 pause:
-		trace_balance_dirty_pages(wb,
+/*		trace_balance_dirty_pages(wb,
 					  sdtc->thresh,
 					  sdtc->bg_thresh,
 					  sdtc->dirty,
@@ -1755,7 +1755,7 @@ pause:
 					  pages_dirtied,
 					  period,
 					  pause,
-					  start_time);
+					  start_time); */
 		__set_current_state(TASK_KILLABLE);
 		io_schedule_timeout(pause);
 
@@ -2254,7 +2254,7 @@ continue_unlock:
 			if (!clear_page_dirty_for_io(page))
 				goto continue_unlock;
 
-			trace_wbc_writepage(wbc, inode_to_bdi(mapping->host));
+//			trace_wbc_writepage(wbc, inode_to_bdi(mapping->host));
 			ret = (*writepage)(page, wbc, data);
 			if (unlikely(ret)) {
 				if (ret == AOP_WRITEPAGE_ACTIVATE) {
@@ -2422,7 +2422,7 @@ void account_page_dirtied(struct page *page, struct address_space *mapping,
 {
 	struct inode *inode = mapping->host;
 
-	trace_writeback_dirty_page(page, mapping);
+//	trace_writeback_dirty_page(page, mapping);
 
 	if (mapping_cap_account_dirty(mapping)) {
 		struct bdi_writeback *wb;
