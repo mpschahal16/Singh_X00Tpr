@@ -69,7 +69,7 @@ static int set_cpu_freq(struct cpufreq_policy *policy, unsigned int new_freq,
 	freqs.new = new_freq;
 	freqs.cpu = policy->cpu;
 
-	trace_cpu_frequency_switch_start(freqs.old, freqs.new, policy->cpu);
+//	trace_cpu_frequency_switch_start(freqs.old, freqs.new, policy->cpu);
 	cpufreq_freq_transition_begin(policy, &freqs);
 
 	rate = new_freq * 1000;
@@ -78,8 +78,8 @@ static int set_cpu_freq(struct cpufreq_policy *policy, unsigned int new_freq,
 	ret = set_cpu_freq_raw(policy->cpu, rate, false);
 	mutex_unlock(&cpu_clk_lock);
 	cpufreq_freq_transition_end(policy, &freqs, ret);
-	if (!ret)
-		trace_cpu_frequency_switch_end(policy->cpu);
+//	if (!ret)
+//		trace_cpu_frequency_switch_end(policy->cpu);
 
 	return ret;
 }
