@@ -26,7 +26,7 @@ static const u64 cfq_fifo_expire[2] = { NSEC_PER_SEC / 4, NSEC_PER_SEC / 8 };
 /* maximum backwards seek, in KiB */
 static const int cfq_back_max = 16 * 1024;
 /* penalty of a backwards seek */
-static const int cfq_back_penalty = 2;
+static const int cfq_back_penalty = 1;
 static const u64 cfq_slice_sync = NSEC_PER_SEC / 10;
 static u64 cfq_slice_async = NSEC_PER_SEC / 25;
 static const int cfq_slice_async_rq = 2;
@@ -908,7 +908,7 @@ static inline bool cfq_bio_sync(struct bio *bio)
 static inline void cfq_schedule_dispatch(struct cfq_data *cfqd)
 {
 	if (cfqd->busy_queues) {
-		cfq_log(cfqd, "schedule dispatch");
+		//cfq_log(cfqd, "schedule dispatch");
 		kblockd_schedule_work(&cfqd->unplug_work);
 	}
 }
@@ -1045,7 +1045,7 @@ cfq_set_prio_slice(struct cfq_data *cfqd, struct cfq_queue *cfqq)
 	cfqq->slice_start = now;
 	cfqq->slice_end = now + slice;
 	cfqq->allocated_slice = slice;
-	cfq_log_cfqq(cfqd, cfqq, "set_slice=%llu", cfqq->slice_end - now);
+	//cfq_log_cfqq(cfqd, cfqq, "set_slice=%llu", cfqq->slice_end - now);
 }
 
 /*
@@ -1411,7 +1411,7 @@ cfq_group_notify_queue_del(struct cfq_data *cfqd, struct cfq_group *cfqg)
 	if (cfqg->nr_cfqq)
 		return;
 
-	cfq_log_cfqg(cfqd, cfqg, "del_from_rr group");
+	//cfq_log_cfqg(cfqd, cfqg, "del_from_rr group");
 	cfq_group_service_tree_del(st, cfqg);
 	cfqg->saved_wl_slice = 0;
 	cfqg_stats_update_dequeue(cfqg);
@@ -1487,12 +1487,12 @@ static void cfq_group_served(struct cfq_data *cfqd, struct cfq_group *cfqg,
 	} else
 		cfqg->saved_wl_slice = 0;
 
-	cfq_log_cfqg(cfqd, cfqg, "served: vt=%llu min_vt=%llu", cfqg->vdisktime,
-					st->min_vdisktime);
-	cfq_log_cfqq(cfqq->cfqd, cfqq,
-		     "sl_used=%llu disp=%llu charge=%llu iops=%u sect=%lu",
-		     used_sl, cfqq->slice_dispatch, charge,
-		     iops_mode(cfqd), cfqq->nr_sectors);
+	//cfq_log_cfqg(cfqd, cfqg, "served: vt=%llu min_vt=%llu", cfqg->vdisktime,
+	//				st->min_vdisktime);
+	//cfq_log_cfqq(cfqq->cfqd, cfqq,
+	//	     "sl_used=%llu disp=%llu charge=%llu iops=%u sect=%lu",
+	//	     used_sl, cfqq->slice_dispatch, charge,
+	//	     iops_mode(cfqd), cfqq->nr_sectors);
 	cfqg_stats_update_timeslice_used(cfqg, used_sl, unaccounted_sl);
 	cfqg_stats_set_start_empty_time(cfqg);
 }
@@ -2351,7 +2351,7 @@ static void cfq_resort_rr_list(struct cfq_data *cfqd, struct cfq_queue *cfqq)
  */
 static void cfq_add_cfqq_rr(struct cfq_data *cfqd, struct cfq_queue *cfqq)
 {
-	cfq_log_cfqq(cfqd, cfqq, "add_to_rr");
+	//cfq_log_cfqq(cfqd, cfqq, "add_to_rr");
 	BUG_ON(cfq_cfqq_on_rr(cfqq));
 	cfq_mark_cfqq_on_rr(cfqq);
 	cfqd->busy_queues++;
@@ -2367,7 +2367,7 @@ static void cfq_add_cfqq_rr(struct cfq_data *cfqd, struct cfq_queue *cfqq)
  */
 static void cfq_del_cfqq_rr(struct cfq_data *cfqd, struct cfq_queue *cfqq)
 {
-	cfq_log_cfqq(cfqd, cfqq, "del_from_rr");
+	//cfq_log_cfqq(cfqd, cfqq, "del_from_rr");
 	BUG_ON(!cfq_cfqq_on_rr(cfqq));
 	cfq_clear_cfqq_on_rr(cfqq);
 
@@ -2474,8 +2474,8 @@ static void cfq_activate_request(struct request_queue *q, struct request *rq)
 	struct cfq_data *cfqd = q->elevator->elevator_data;
 
 	cfqd->rq_in_driver++;
-	cfq_log_cfqq(cfqd, RQ_CFQQ(rq), "activate rq, drv=%d",
-						cfqd->rq_in_driver);
+	//cfq_log_cfqq(cfqd, RQ_CFQQ(rq), "activate rq, drv=%d",
+	//					cfqd->rq_in_driver);
 
 	cfqd->last_position = blk_rq_pos(rq) + blk_rq_sectors(rq);
 }
@@ -2486,8 +2486,8 @@ static void cfq_deactivate_request(struct request_queue *q, struct request *rq)
 
 	WARN_ON(!cfqd->rq_in_driver);
 	cfqd->rq_in_driver--;
-	cfq_log_cfqq(cfqd, RQ_CFQQ(rq), "deactivate rq, drv=%d",
-						cfqd->rq_in_driver);
+	//cfq_log_cfqq(cfqd, RQ_CFQQ(rq), "deactivate rq, drv=%d",
+	//					cfqd->rq_in_driver);
 }
 
 static void cfq_remove_request(struct request *rq)
@@ -2607,8 +2607,8 @@ static void __cfq_set_active_queue(struct cfq_data *cfqd,
 				   struct cfq_queue *cfqq)
 {
 	if (cfqq) {
-		cfq_log_cfqq(cfqd, cfqq, "set_active wl_class:%d wl_type:%d",
-				cfqd->serving_wl_class, cfqd->serving_wl_type);
+		//cfq_log_cfqq(cfqd, cfqq, "set_active wl_class:%d wl_type:%d",
+		//		cfqd->serving_wl_class, cfqd->serving_wl_type);
 		cfqg_stats_update_avg_queue_size(cfqq->cfqg);
 		cfqq->slice_start = 0;
 		cfqq->dispatch_start = ktime_get_ns();
@@ -2636,7 +2636,7 @@ static void
 __cfq_slice_expired(struct cfq_data *cfqd, struct cfq_queue *cfqq,
 		    bool timed_out)
 {
-	cfq_log_cfqq(cfqd, cfqq, "slice expired t=%d", timed_out);
+	//cfq_log_cfqq(cfqd, cfqq, "slice expired t=%d", timed_out);
 
 	if (cfq_cfqq_wait_request(cfqq))
 		cfq_del_timer(cfqd, cfqq);
@@ -2661,7 +2661,7 @@ __cfq_slice_expired(struct cfq_data *cfqd, struct cfq_queue *cfqq,
 			cfqq->slice_resid = cfq_scaled_cfqq_slice(cfqd, cfqq);
 		else
 			cfqq->slice_resid = cfqq->slice_end - ktime_get_ns();
-		cfq_log_cfqq(cfqd, cfqq, "resid=%lld", cfqq->slice_resid);
+		//cfq_log_cfqq(cfqd, cfqq, "resid=%lld", cfqq->slice_resid);
 	}
 
 	cfq_group_served(cfqd, cfqq->cfqg, cfqq);
@@ -2886,7 +2886,7 @@ static bool cfq_should_idle(struct cfq_data *cfqd, struct cfq_queue *cfqq)
 	if (st->count == 1 && cfq_cfqq_sync(cfqq) &&
 	   !cfq_io_thinktime_big(cfqd, &st->ttime, false))
 		return true;
-	cfq_log_cfqq(cfqd, cfqq, "Not idling. st->count:%d", st->count);
+	//cfq_log_cfqq(cfqd, cfqq, "Not idling. st->count:%d", st->count);
 	return false;
 }
 
@@ -2940,8 +2940,8 @@ static void cfq_arm_slice_timer(struct cfq_data *cfqd)
 	 */
 	if (sample_valid(cic->ttime.ttime_samples) &&
 	    (cfqq->slice_end - now < cic->ttime.ttime_mean)) {
-		cfq_log_cfqq(cfqd, cfqq, "Not idling. think_time:%llu",
-			     cic->ttime.ttime_mean);
+		//cfq_log_cfqq(cfqd, cfqq, "Not idling. think_time:%llu",
+		//	     cic->ttime.ttime_mean);
 		return;
 	}
 
@@ -2959,8 +2959,8 @@ static void cfq_arm_slice_timer(struct cfq_data *cfqd)
 	hrtimer_start(&cfqd->idle_slice_timer, ns_to_ktime(sl),
 		      HRTIMER_MODE_REL);
 	cfqg_stats_set_start_idle_time(cfqq->cfqg);
-	cfq_log_cfqq(cfqd, cfqq, "arm_idle: %llu group_idle: %d", sl,
-			group_idle ? 1 : 0);
+	//cfq_log_cfqq(cfqd, cfqq, "arm_idle: %llu group_idle: %d", sl,
+	//		group_idle ? 1 : 0);
 }
 
 /*
@@ -2971,7 +2971,7 @@ static void cfq_dispatch_insert(struct request_queue *q, struct request *rq)
 	struct cfq_data *cfqd = q->elevator->elevator_data;
 	struct cfq_queue *cfqq = RQ_CFQQ(rq);
 
-	cfq_log_cfqq(cfqd, cfqq, "dispatch_insert");
+	//cfq_log_cfqq(cfqd, cfqq, "dispatch_insert");
 
 	cfqq->next_rq = cfq_find_next_rq(cfqd, cfqq, rq);
 	cfq_remove_request(rq);
@@ -3173,7 +3173,7 @@ new_workload:
 		slice = max(slice, 2 * cfqd->cfq_slice_idle);
 
 	slice = max_t(u64, slice, CFQ_MIN_TT);
-	cfq_log(cfqd, "workload slice:%llu", slice);
+	//cfq_log(cfqd, "workload slice:%llu", slice);
 	cfqd->workload_expires = now + slice;
 }
 
@@ -3357,7 +3357,7 @@ static int cfq_forced_dispatch(struct cfq_data *cfqd)
 
 	BUG_ON(cfqd->busy_queues);
 
-	cfq_log(cfqd, "forced_dispatch=%d", dispatched);
+	//cfq_log(cfqd, "forced_dispatch=%d", dispatched);
 	return dispatched;
 }
 
@@ -3485,8 +3485,8 @@ static bool cfq_dispatch_request(struct cfq_data *cfqd, struct cfq_queue *cfqq)
 	 */
 	if (!rq)
 		rq = cfqq->next_rq;
-	else
-		cfq_log_cfqq(cfqq->cfqd, cfqq, "fifo=%p", rq);
+	//else
+		//cfq_log_cfqq(cfqq->cfqd, cfqq, "fifo=%p", rq);
 
 	/*
 	 * insert request into driver dispatch list
@@ -3542,7 +3542,7 @@ static int cfq_dispatch_requests(struct request_queue *q, int force)
 		cfq_slice_expired(cfqd, 0);
 	}
 
-	cfq_log_cfqq(cfqd, cfqq, "dispatched a request");
+	//cfq_log_cfqq(cfqd, cfqq, "dispatched a request");
 	return 1;
 }
 
@@ -3564,7 +3564,7 @@ static void cfq_put_queue(struct cfq_queue *cfqq)
 	if (cfqq->ref)
 		return;
 
-	cfq_log_cfqq(cfqd, cfqq, "put_queue");
+	//cfq_log_cfqq(cfqd, cfqq, "put_queue");
 	BUG_ON(rb_first(&cfqq->sort_list));
 	BUG_ON(cfqq->allocated[READ] + cfqq->allocated[WRITE]);
 	cfqg = cfqq->cfqg;
@@ -3748,14 +3748,14 @@ static void check_blkcg_changed(struct cfq_io_cq *cic, struct bio *bio)
 	 */
 	cfqq = cic_to_cfqq(cic, false);
 	if (cfqq) {
-		cfq_log_cfqq(cfqd, cfqq, "changed cgroup");
+		//cfq_log_cfqq(cfqd, cfqq, "changed cgroup");
 		cic_set_cfqq(cic, NULL, false);
 		cfq_put_queue(cfqq);
 	}
 
 	cfqq = cic_to_cfqq(cic, true);
 	if (cfqq) {
-		cfq_log_cfqq(cfqd, cfqq, "changed cgroup");
+		//cfq_log_cfqq(cfqd, cfqq, "changed cgroup");
 		cic_set_cfqq(cic, NULL, true);
 		cfq_put_queue(cfqq);
 	}
@@ -3824,7 +3824,7 @@ cfq_get_queue(struct cfq_data *cfqd, bool is_sync, struct cfq_io_cq *cic,
 	cfq_init_cfqq(cfqd, cfqq, current->pid, is_sync);
 	cfq_init_prio_data(cfqq, cic);
 	cfq_link_cfqq_cfqg(cfqq, cfqg);
-	cfq_log_cfqq(cfqd, cfqq, "alloced");
+	//cfq_log_cfqq(cfqd, cfqq, "alloced");
 
 	if (async_cfqq) {
 		/* a new async queue is created, pin and remember */
@@ -3918,7 +3918,7 @@ cfq_update_idle_window(struct cfq_data *cfqd, struct cfq_queue *cfqq,
 	}
 
 	if (old_idle != enable_idle) {
-		cfq_log_cfqq(cfqd, cfqq, "idle=%d", enable_idle);
+		//cfq_log_cfqq(cfqd, cfqq, "idle=%d", enable_idle);
 		if (enable_idle)
 			cfq_mark_cfqq_idle_window(cfqq);
 		else
@@ -4010,7 +4010,7 @@ static void cfq_preempt_queue(struct cfq_data *cfqd, struct cfq_queue *cfqq)
 {
 	enum wl_type_t old_type = cfqq_type(cfqd->active_queue);
 
-	cfq_log_cfqq(cfqd, cfqq, "preempt");
+	//cfq_log_cfqq(cfqd, cfqq, "preempt");
 	cfq_slice_expired(cfqd, 1);
 
 	/*
@@ -4091,7 +4091,7 @@ static void cfq_insert_request(struct request_queue *q, struct request *rq)
 	struct cfq_data *cfqd = q->elevator->elevator_data;
 	struct cfq_queue *cfqq = RQ_CFQQ(rq);
 
-	cfq_log_cfqq(cfqd, cfqq, "insert_request");
+	//cfq_log_cfqq(cfqd, cfqq, "insert_request");
 	cfq_init_prio_data(cfqq, RQ_CIC(rq));
 
 	rq->fifo_time = ktime_get_ns() + cfqd->cfq_fifo_expire[rq_is_sync(rq)];
@@ -4184,8 +4184,8 @@ static void cfq_completed_request(struct request_queue *q, struct request *rq)
 	const int sync = rq_is_sync(rq);
 	u64 now = ktime_get_ns();
 
-	cfq_log_cfqq(cfqd, cfqq, "complete rqnoidle %d",
-		     !!(rq->cmd_flags & REQ_NOIDLE));
+	//cfq_log_cfqq(cfqd, cfqq, "complete rqnoidle %d",
+	//	     !!(rq->cmd_flags & REQ_NOIDLE));
 
 	cfq_update_hw_tag(cfqd);
 
@@ -4250,7 +4250,7 @@ static void cfq_completed_request(struct request_queue *q, struct request *rq)
 				extend_sl = cfqd->cfq_group_idle;
 			cfqq->slice_end = now + extend_sl;
 			cfq_mark_cfqq_wait_busy(cfqq);
-			cfq_log_cfqq(cfqd, cfqq, "will busy wait");
+			//cfq_log_cfqq(cfqd, cfqq, "will busy wait");
 		}
 
 		/*
@@ -4336,7 +4336,7 @@ static struct cfq_queue *
 cfq_merge_cfqqs(struct cfq_data *cfqd, struct cfq_io_cq *cic,
 		struct cfq_queue *cfqq)
 {
-	cfq_log_cfqq(cfqd, cfqq, "merging with queue %p", cfqq->new_cfqq);
+	//cfq_log_cfqq(cfqd, cfqq, "merging with queue %p", cfqq->new_cfqq);
 	cic_set_cfqq(cic, cfqq->new_cfqq, 1);
 	cfq_mark_cfqq_coop(cfqq->new_cfqq);
 	cfq_put_queue(cfqq);
@@ -4393,7 +4393,7 @@ new_queue:
 		 * If the queue was seeky for too long, break it apart.
 		 */
 		if (cfq_cfqq_coop(cfqq) && cfq_cfqq_split_coop(cfqq)) {
-			cfq_log_cfqq(cfqd, cfqq, "breaking apart cfqq");
+			//cfq_log_cfqq(cfqd, cfqq, "breaking apart cfqq");
 			cfqq = split_cfqq(cic, cfqq);
 			if (!cfqq)
 				goto new_queue;
@@ -4441,7 +4441,7 @@ static enum hrtimer_restart cfq_idle_slice_timer(struct hrtimer *timer)
 	unsigned long flags;
 	int timed_out = 1;
 
-	cfq_log(cfqd, "idle timer fired");
+	//cfq_log(cfqd, "idle timer fired");
 
 	spin_lock_irqsave(cfqd->queue->queue_lock, flags);
 
