@@ -131,31 +131,6 @@ config CPU_FREQ_DEFAULT_GOV_SCHEDUTIL
 	  have a look at the help section of that governor. The fallback
 	  governor will be 'performance'.
 
-config CPU_FREQ_DEFAULT_GOV_BLU_ACTIVE
-	bool "blu_active"
-	select CPU_FREQ_GOV_BLU_ACTIVE
-	help
-	  Use the CPUFreq governor 'blu_active' as default. This allows
-	  you to get a full dynamic cpu frequency capable system by simply
-	  loading your cpufreq low-level hardware driver, using the
-	  'interactive' governor for latency-sensitive workloads.
-
-config CPU_FREQ_DEFAULT_GOV_IMPULSE
-	bool "impulse"
-	select CPU_FREQ_GOV_IMPULSE
-	help
-	  Use the CPUFreq governor 'impulse' as default. This allows
-	  you to get a full dynamic cpu frequency capable system by simply
-	  loading your cpufreq low-level hardware driver, using the
-	  'impulse' governor for latency-sensitive workloads.
-
-config CPU_FREQ_DEFAULT_GOV_CULTIVATION
-	bool "cultivation"
-	select CPU_FREQ_GOV_CULTIVATION
-	help
-	Use the CPUFreq governor 'cultivation' as default.
-
-
 config CPU_FREQ_DEFAULT_GOV_ALUCARD
 	bool "alucard"
 	select CPU_FREQ_GOV_ALUCARD
