@@ -28,7 +28,7 @@
 #define PMIC_INT_ANALOG_CODEC "analog-codec"
 
 #define DEV_NAME_STR_LEN  32
-#define DEFAULT_MCLK_RATE 9600000
+#define DEFAULT_MCLK_RATE 12288000
 
 #if defined(CONFIG_MACH_ASUS_X00T) && defined(CONFIG_INPUT_SX9310)
 extern void sar_switch(bool);
