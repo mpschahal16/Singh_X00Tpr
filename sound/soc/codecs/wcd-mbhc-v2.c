@@ -1239,9 +1239,6 @@ static void wcd_correct_swch_plug(struct work_struct *work)
 	int rc, spl_hs_count = 0;
 	int cross_conn;
 	int try = 0;
-	int try_check = 0;
-	int retry = 0;
-	int headset_cnt = 0;
 
 	pr_debug("%s: enter\n", __func__);
 
