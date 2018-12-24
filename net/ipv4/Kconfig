@@ -654,7 +654,14 @@ config TCP_CONG_CHINA
   	well utilized and congestion is imminent.
   	TCP-China is a modification of TCP-Africa that keeps using fast mode all the
   	time, regardless of fairness.
-
+	
+config TCP_CONG_SOCIOPATH
+        tristate "TCP Sociopath"
+        default n
+        ---help---
+        This is basically TCP Reno with no slow start and a much more
+        aggressive ssthresh recalculation (lowers it by 5% instead of 50%).
+        Use responsibly!
 
 choice
 	prompt "Default TCP congestion control"
@@ -683,6 +690,9 @@ choice
 
 	config DEFAULT_WESTWOOD
 		bool "Westwood" if TCP_CONG_WESTWOOD=y
+	
+	config DEFAULT_SOCIOPATH
+		bool "Sociopath" if TCP_CONG_SOCIOPATH=y
 
 	config DEFAULT_DCTCP
 		bool "DCTCP" if TCP_CONG_DCTCP=y
@@ -721,6 +731,7 @@ config DEFAULT_TCP_CONG
 	default "cdg" if DEFAULT_CDG
 	default "china" if DEFAULT_CHINA
 	default "agilesd" if DEFAULT_AGILESD
+	default "sociopath" if DEFAULT_SOCIOPATH
 	default "cubic"
 
 config TCP_MD5SIG
