@@ -63,13 +63,9 @@
 #define CREATE_TRACE_POINTS
 #include "trace/lowmemorykiller.h"
 
-<<<<<<< HEAD
-static uint32_t lowmem_debug_level = 1;
-=======
 extern int extra_free_kbytes;
 
 static uint32_t lowmem_debug_level = 0;
->>>>>>> b20adaa96018... lowmemorykiller: Account for extra_free_kbytes in calcuations
 static short lowmem_adj[6] = {
 	0,
 	1,
