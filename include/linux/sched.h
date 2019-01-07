@@ -2134,12 +2134,7 @@ struct task_struct {
 	int pagefault_disabled;
 
 #ifdef CONFIG_MMU
-<<<<<<< HEAD
-	struct list_head oom_reaper_list;
-=======
 	struct task_struct *oom_reaper_list;
-
->>>>>>> e557195485a8... oom: make oom_reaper_list single linked
 #endif
 
 /* CPU-specific state of this task */

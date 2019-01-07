@@ -1365,6 +1365,7 @@ static bool mem_cgroup_out_of_memory(struct mem_cgroup *memcg, gfp_t gfp_mask,
 	};
 
 	mutex_lock(&oom_lock);
+	bool ret;
 	ret = out_of_memory(&oc);
 	mutex_unlock(&oom_lock);
 	return ret;
