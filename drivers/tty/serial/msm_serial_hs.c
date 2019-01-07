@@ -2269,10 +2269,18 @@ void enable_wakeup_interrupt(struct msm_hs_port *msm_uport)
 	if (!(msm_uport->wakeup.enabled)) {
 		spin_lock_irqsave(&uport->lock, flags);
 		msm_uport->wakeup.ignore = 1;
-		msm_uport->wakeup.enabled = true;
+		/* Keep this disabled for 1 msec */
+		msm_uport->wakeup.enabled = false;
 		spin_unlock_irqrestore(&uport->lock, flags);
 		disable_irq(uport->irq);
 		enable_irq(msm_uport->wakeup.irq);
+
+		/* Add delay before enabling wakeup irq */
+		udelay(1000);
+		spin_lock_irqsave(&uport->lock, flags);
+		if (msm_uport->wakeup.ignore == 1)
+			msm_uport->wakeup.enabled = true;
+		spin_unlock_irqrestore(&uport->lock, flags);
 	} else {
 		MSM_HS_WARN("%s:Wake up IRQ already enabled", __func__);
 	}
@@ -2458,6 +2466,10 @@ static irqreturn_t msm_hs_wakeup_isr(int irq, void *dev)
 	struct msm_hs_port *msm_uport = (struct msm_hs_port *)dev;
 	struct uart_port *uport = &msm_uport->uport;
 	struct tty_struct *tty = NULL;
+
+	/* Do not serve ISR if this flag is false */
+	if (!msm_uport->wakeup.enabled)
+		return IRQ_HANDLED;
 
 	spin_lock_irqsave(&uport->lock, flags);
 
@@ -2829,6 +2841,7 @@ static int uartdm_init_port(struct uart_port *uport)
 	struct msm_hs_port *msm_uport = UARTDM_TO_MSM(uport);
 	struct msm_hs_tx *tx = &msm_uport->tx;
 	struct msm_hs_rx *rx = &msm_uport->rx;
+	struct sched_param param = { .sched_priority = 1 };
 
 	init_waitqueue_head(&rx->wait);
 	init_waitqueue_head(&tx->wait);
@@ -2843,6 +2856,8 @@ static int uartdm_init_port(struct uart_port *uport)
 		MSM_HS_ERR("%s(): error creating task", __func__);
 		goto exit_lh_init;
 	}
+	sched_setscheduler(rx->task, SCHED_FIFO, &param);
+
 	init_kthread_work(&rx->kwork, msm_serial_hs_rx_work);
 
 	init_kthread_worker(&tx->kworker);
@@ -2852,6 +2867,7 @@ static int uartdm_init_port(struct uart_port *uport)
 		MSM_HS_ERR("%s(): error creating task", __func__);
 		goto exit_lh_init;
 	}
+	sched_setscheduler(tx->task, SCHED_FIFO, &param);
 
 	init_kthread_work(&tx->kwork, msm_serial_hs_tx_work);
 
