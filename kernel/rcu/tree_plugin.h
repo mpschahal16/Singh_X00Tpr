@@ -2204,6 +2204,7 @@ static void nocb_follower_wait(struct rcu_data *rdp)
 //			trace_rcu_nocb_wake(rdp->rsp->name, rdp->cpu,
 //					    "FollowerSleep");
 			wait_event_interruptible(rdp->nocb_wq,
+							READ_ONCE(rdp->nocb_follower_head));
 		} else if (firsttime) {
 			/* Don't drown trace log with "Poll"! */
 			firsttime = false;
