@@ -59,8 +59,6 @@
 #include "mdss_smmu.h"
 #include "mdss_mdp.h"
 
-#include "mdss_livedisplay.h"
-
 #ifdef CONFIG_MACH_ASUS_X00T
 static struct wake_lock early_unblank_wakelock;
 extern bool lcd_suspend_flag;
