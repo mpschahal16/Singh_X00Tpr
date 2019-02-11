@@ -1124,9 +1124,7 @@ static void usbpd_set_state(struct usbpd *pd, enum usbpd_state next_state)
 		 * as long as the cap mismatch bit is set */
 		if (PD_RDO_OBJ_POS(pd->rdo) != 1 ||
 			PD_RDO_FIXED_CURR(pd->rdo) >
-				PD_SRC_PDO_FIXED_MAX_CURR(*default_src_caps) ||
-			(PD_RDO_FIXED_CURR_MINMAX(pd->rdo) >
-				PD_SRC_PDO_FIXED_MAX_CURR(*default_src_caps) && !PD_RDO_MISMATCH(pd->rdo))) {
+				PD_SRC_PDO_FIXED_MAX_CURR(*default_src_caps)) {
 			/* send Reject */
 			ret = pd_send_msg(pd, MSG_REJECT, NULL, 0, SOP_MSG);
 			if (ret) {
