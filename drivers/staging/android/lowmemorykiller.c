@@ -435,6 +435,41 @@ static int test_task_lmk_waiting(struct task_struct *p)
  	return 0;
 }
 
+static bool lowmem_whitelist(char *name)
+{
+	bool ret = false;
+	if (name == NULL)return ret;
+
+	if ((!strcmp(name, "com.miui.home")) ||
+		(!strcmp(name, "com.android.launcher3")) ||
+		(!strcmp(name, "com.android.quickstep")) ||
+		(!strcmp(name, "org.lineageos.snap")) ||
+		(!strcmp(name, "com.teslacoilsw.launcher")) ||
+		(!strcmp(name, "com.Tele.GCam")) ||
+		(!strcmp(name, "com.google.android.Redmi4X")) ||
+		(!strcmp(name, "com.teslacoilsw.launcher")) ||
+		(!strcmp(name, "com.android.launcher3")) ||
+		(!strcmp(name, "com.google.android.apps.nexuslauncher")) ||
+		(!strcmp(name, "ch.deletescape.lawnchair.plah")) ||
+		(!strcmp(name, "com.google.android.launcher")) ||
+		(!strcmp(name, "ru.whatau.cpl")) ||
+		(!strcmp(name, "amirz.rootless.nexuslauncher")) ||
+		(!strcmp(name, "com.google.android.GooglrCamera")) ||
+		(!strcmp(name, "ch.deletescape.lawnchair.ci")) ||
+		(!strcmp(name, "com.bsgmod.camera")) ||
+		(!strcmp(name, "com.whatsapp")) ||		
+		(!strcmp(name, "com.android.contacts")) ||
+		(!strcmp(name, "com.android.mms")) ||
+		(!strcmp(name, "com.xiaomi.hm.health")) ||
+		(!strcmp(name, "com.mi.android.globallauncher")) ||
+		(!strcmp(name, ".android.camera")))
+	{
+		ret = true;
+	}
+
+	return ret;
+}
+
 static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 {
 	struct task_struct *tsk;
@@ -546,7 +581,7 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 		}
 		tasksize = get_mm_rss(p->mm);
 		task_unlock(p);
-		if (tasksize <= 0)
+		if ((tasksize <= 0) || (lowmem_whitelist(p->comm) == true))
 			continue;
 		if (selected) {
 			if (oom_score_adj < selected_oom_score_adj)
