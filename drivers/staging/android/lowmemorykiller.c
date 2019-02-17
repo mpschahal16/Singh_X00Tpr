@@ -462,7 +462,12 @@ static bool lowmem_whitelist(char *name)
 		(!strcmp(name, "com.android.mms")) ||
 		(!strcmp(name, "com.xiaomi.hm.health")) ||
 		(!strcmp(name, "com.mi.android.globallauncher")) ||
-		(!strcmp(name, ".android.camera")))
+		(!strcmp(name, ".android.camera"))||
+		(!strcmp(name, "com.huawei.health"))||
+		(!strcmp(name, "com.android.chrome"))||
+		(!strcmp(name, "com.google.android.youtube"))||
+		(!strcmp(name, "com.spotify.music"))||
+		(!strcmp(name, "jp.naver.line.android")))
 	{
 		ret = true;
 	}
