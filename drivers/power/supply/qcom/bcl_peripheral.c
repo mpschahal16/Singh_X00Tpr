@@ -937,6 +937,7 @@ static irqreturn_t bcl_handle_vbat(int irq, void *data)
 		perph_data->ops.notify(perph_data->param_data,
 			perph_data->trip_val, BCL_LOW_TRIP);
 		schedule_delayed_work(&perph_data->poll_work,
+
 			msecs_to_jiffies(perph_data->polling_delay_ms));
 	} else {
 		pr_debug("Ignoring interrupt\n");

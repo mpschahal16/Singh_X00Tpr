@@ -477,8 +477,8 @@ int bcl_voltage_notify(bool is_high_thresh)
 //	trace_bcl_sw_mitigation_event((is_high_thresh)
 //		? "vbat High trip notify"
 //		: "vbat Low trip notify");
-//	bcl_vph_notify((is_high_thresh) ? BCL_HIGH_THRESHOLD
-//			: BCL_LOW_THRESHOLD);
+	bcl_vph_notify((is_high_thresh) ? BCL_HIGH_THRESHOLD
+			: BCL_LOW_THRESHOLD);
 	return ret;
 }
 EXPORT_SYMBOL(bcl_voltage_notify);
