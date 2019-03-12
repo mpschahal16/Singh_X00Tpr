@@ -1385,15 +1385,7 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
 		}
 
 		/* Set default affinity mask once everything is setup */
-<<<<<<< HEAD
-		if (is_perf_crit_irq(new))
-			affine_one_irq(new, &desc->irq_data);
-		else
-			setup_affinity(desc, mask);
-=======
 		setup_affinity(desc, mask);
->>>>>>> parent of e55f8e8491e8... kernel: Force perf-critical IRQs and kthreads onto big CPU cluster
-
 	} else if (new->flags & IRQF_TRIGGER_MASK) {
 		unsigned int nmsk = new->flags & IRQF_TRIGGER_MASK;
 		unsigned int omsk = irq_settings_get_trigger_mask(desc);
