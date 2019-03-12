@@ -452,10 +452,6 @@ int cpu_down(unsigned int cpu)
 {
 	int err;
 
-	/* Some kthreads require one big-cluster CPU to stay online */
-	if (cpu == 4)
-		return -EINVAL;
-
 	cpu_maps_update_begin();
 
 	if (cpu_hotplug_disabled) {
