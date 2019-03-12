@@ -21,14 +21,6 @@
 
 #include "internals.h"
 
-<<<<<<< HEAD
-static const char *const perf_irq_names[] = {
-	"MDSS",
-	"kgsl-3d0",
-	"soc:fp_fpc1020"
-};
-static unsigned int perf_irq_nums[ARRAY_SIZE(perf_irq_names)] __read_mostly;
-=======
 struct irq_desc_list {
 	struct list_head list;
 	struct irq_desc *desc;
@@ -37,7 +29,6 @@ struct irq_desc_list {
 };
 
 static DEFINE_RAW_SPINLOCK(perf_irqs_lock);
->>>>>>> a8bc6e1da883... kernel: Add API to mark IRQs and kthreads as performance critical
 
 #ifdef CONFIG_IRQ_FORCED_THREADING
 __read_mostly bool force_irqthreads;
@@ -1143,37 +1134,6 @@ setup_irq_thread(struct irqaction *new, unsigned int irq, bool secondary)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void affine_one_irq(struct irqaction *action, struct irq_data *data)
-{
-	static const unsigned long big_cluster_cpus = 0xf0;
-	const struct cpumask *mask = to_cpumask(&big_cluster_cpus);
-
-	irq_set_affinity_locked(data, mask, true);
-	if (action->thread)
-		kthread_bind_mask(action->thread, mask);
-}
-
-void reaffine_perf_irqs(void)
-{
-	static const size_t len = ARRAY_SIZE(perf_irq_nums);
-	unsigned long flags;
-	int i;
-
-	for (i = 0; i < len; i++) {
-		unsigned int irq = perf_irq_nums[i];
-		struct irq_desc *desc;
-
-		if (!irq)
-			break;
-
-		desc = irq_to_desc(irq);
-
-		raw_spin_lock_irqsave(&desc->lock, flags);
-		affine_one_irq(desc->action, &desc->irq_data);
-		raw_spin_unlock_irqrestore(&desc->lock, flags);
-	}
-=======
 static void add_desc_to_perf_list(struct irq_desc *desc)
 {
 	struct irq_desc_list *item;
@@ -1238,7 +1198,6 @@ void reaffine_perf_irqs(void)
 		raw_spin_unlock_irqrestore(&desc->lock, flags);
 	}
 	raw_spin_unlock_irqrestore(&perf_irqs_lock, outer_flags);
->>>>>>> a8bc6e1da883... kernel: Add API to mark IRQs and kthreads as performance critical
 }
 
 /*
@@ -1466,9 +1425,6 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
 		}
 
 		/* Set default affinity mask once everything is setup */
-<<<<<<< HEAD
-		setup_affinity(desc, mask);
-=======
 		if (new->flags & IRQF_PERF_CRITICAL) {
 			add_desc_to_perf_list(desc);
 			irqd_set(&desc->irq_data, IRQD_AFFINITY_MANAGED);
@@ -1478,7 +1434,6 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
 			setup_affinity(desc, mask);
 		}
 
->>>>>>> a8bc6e1da883... kernel: Add API to mark IRQs and kthreads as performance critical
 	} else if (new->flags & IRQF_TRIGGER_MASK) {
 		unsigned int nmsk = new->flags & IRQF_TRIGGER_MASK;
 		unsigned int omsk = irq_settings_get_trigger_mask(desc);
