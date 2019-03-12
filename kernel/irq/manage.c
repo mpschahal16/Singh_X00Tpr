@@ -1132,29 +1132,6 @@ setup_irq_thread(struct irqaction *new, unsigned int irq, bool secondary)
 	return 0;
 }
 
-static bool is_perf_crit_irq(struct irqaction *action)
-{
-	static const size_t len = ARRAY_SIZE(perf_irq_names);
-	int i;
-
-	for (i = 0; i < len; i++) {
-		if (!strcmp(perf_irq_names[i], action->name))
-			break;
-	}
-
-	if (i == len)
-		return false;
-
-	for (i = 0; i < len; i++) {
-		if (!perf_irq_nums[i]) {
-			perf_irq_nums[i] = action->irq;
-			break;
-		}
-	}
-
-	return true;
-}
-
 static void affine_one_irq(struct irqaction *action, struct irq_data *data)
 {
 	static const unsigned long big_cluster_cpus = 0xf0;
@@ -1408,10 +1385,14 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
 		}
 
 		/* Set default affinity mask once everything is setup */
+<<<<<<< HEAD
 		if (is_perf_crit_irq(new))
 			affine_one_irq(new, &desc->irq_data);
 		else
 			setup_affinity(desc, mask);
+=======
+		setup_affinity(desc, mask);
+>>>>>>> parent of e55f8e8491e8... kernel: Force perf-critical IRQs and kthreads onto big CPU cluster
 
 	} else if (new->flags & IRQF_TRIGGER_MASK) {
 		unsigned int nmsk = new->flags & IRQF_TRIGGER_MASK;
