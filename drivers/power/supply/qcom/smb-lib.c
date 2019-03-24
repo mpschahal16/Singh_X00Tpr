@@ -1744,11 +1744,9 @@ int smblib_get_prop_batt_capacity(struct smb_charger *chg,
 				  union power_supply_propval *val)
 {
 	int rc = -EINVAL;
-#ifdef CONFIG_CHARGING_LIMITER
 	union power_supply_propval charge_cache = {0, };
 	union power_supply_propval suspend_cache = {0, };
 	bool charging = false;
-#endif
 
 
 	if (chg->fake_capacity >= 0) {
