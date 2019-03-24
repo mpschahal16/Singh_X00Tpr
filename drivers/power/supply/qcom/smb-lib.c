@@ -20,7 +20,6 @@
 #include <linux/input/qpnp-power-on.h>
 #include <linux/irq.h>
 #include <linux/pmic-voter.h>
-#include <linux/moduleparam.h>
 #include "smb-lib.h"
 #include "smb-reg.h"
 #include "battery.h"
@@ -136,16 +135,6 @@ void asus_smblib_relax(struct smb_charger *chg)
 	wake_unlock(&asus_chg_lock);
 }
 #endif /* CONFIG_MACH_ASUS_X00T */
-
-#ifdef CONFIG_CHARGING_LIMITER
-bool suspended = false;
-unsigned int stop_charge_capacity = 100;
-unsigned int continue_charge_capacity = 100;
-
-module_param(stop_charge_capacity, uint, 0644);
-module_param(continue_charge_capacity, uint, 0644);
-#endif
-
 
 static bool is_secure(struct smb_charger *chg, int addr)
 {
@@ -1744,10 +1733,6 @@ int smblib_get_prop_batt_capacity(struct smb_charger *chg,
 				  union power_supply_propval *val)
 {
 	int rc = -EINVAL;
-	union power_supply_propval charge_cache = {0, };
-	union power_supply_propval suspend_cache = {0, };
-	bool charging = false;
-
 
 	if (chg->fake_capacity >= 0) {
 		val->intval = chg->fake_capacity;
@@ -1757,41 +1742,6 @@ int smblib_get_prop_batt_capacity(struct smb_charger *chg,
 	if (chg->bms_psy)
 		rc = power_supply_get_property(chg->bms_psy,
 				POWER_SUPPLY_PROP_CAPACITY, val);
-
-#ifdef CONFIG_CHARGING_LIMITER
-	//Deactivate with both values to 100 or higher (disabled by defaut)
-	//Also prevents from setting too low values
-	if((stop_charge_capacity >= 100 && continue_charge_capacity >= 100) || stop_charge_capacity < 50){
-		return rc;
-	}
-
-	//If unlogical set values (continue >= stop) calculate new continue
-	if(continue_charge_capacity >= stop_charge_capacity)
-		continue_charge_capacity = stop_charge_capacity - 10;
-
-	//Get Charging state
-	if(smblib_get_prop_batt_status(chg,&charge_cache)){
-		pr_err("Charging limiter: Error while getting batt_status");
-		return rc;
-	}
-
-	charging = charge_cache.intval == POWER_SUPPLY_STATUS_CHARGING;
-	charging = charge_cache.intval == POWER_SUPPLY_STATUS_CHARGING;
-
-	//If capacity == stop value and phone is charging and charging isn't suspended suspend charging
-	if(val->intval == stop_charge_capacity && charging && !suspended){
-		suspend_cache.intval = 1;
-		if(smblib_set_prop_input_suspend(chg,&suspend_cache)){
-			pr_info("Charging limiter: Error while suspend charging");
-		}
-	}else if(val->intval <= continue_charge_capacity && suspended){ //If capacity is lower or equal to continue value continue charging (will also be used when reconnect charger)
-		suspend_cache.intval = 0;
-		if(smblib_set_prop_input_suspend(chg,&suspend_cache)){
-			pr_info("Charging limiter: Error while continue charging");
-		}
-	}
-
-#endif
 	return rc;
 }
 
@@ -2071,11 +2021,7 @@ int smblib_set_prop_input_suspend(struct smb_charger *chg,
 		return rc;
 	}
 
-	suspended = (bool)val->intval;
 	power_supply_changed(chg->batt_psy);
-#ifdef CONFIG_CHARGING_LIMITER
-	suspended = (bool)val->intval;
-#endif
 	return rc;
 }
 
