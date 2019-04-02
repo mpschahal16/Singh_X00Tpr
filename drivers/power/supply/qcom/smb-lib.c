@@ -2687,7 +2687,7 @@ int smblib_get_prop_die_health(struct smb_charger *chg,
 #define SDP_CURRENT_UA			500000
 #define CDP_CURRENT_UA			1500000
 #ifdef CONFIG_MACH_ASUS_X00T
-#define DCP_CURRENT_UA			500000
+#define DCP_CURRENT_UA			2000000
 #else
 #define DCP_CURRENT_UA			1500000
 #endif
@@ -3469,6 +3469,7 @@ void smblib_asus_monitor_start(struct smb_charger *chg, int time)
 #define SMBCHG_FAST_CHG_CURRENT_VALUE_1500MA	0x3C
 #define SMBCHG_FAST_CHG_CURRENT_VALUE_2000MA	0x50
 #define SMBCHG_FAST_CHG_CURRENT_VALUE_2050MA	0x52
+#define SMBCHG_FAST_CHG_CURRENT_VALUE_2850MA	0x72
 #define SMBCHG_FAST_CHG_CURRENT_VALUE_3000MA	0x78
 
 enum JEITA_state {
@@ -3718,7 +3719,7 @@ void jeita_rule(void)
 	bat_volt = asus_get_prop_batt_volt(smbchg_dev);
 	bat_capacity = asus_get_prop_batt_capacity(smbchg_dev);
 	state = smbchg_jeita_judge_state(state, bat_temp);
-	pr_debug("%s: state=%d, batt_health = %s, bat_temp = %d, bat_volt = %d, bat_capacity=%d, ICL = 0x%x, FV_reg=0x%x\n",
+	printk("%s: state=%d, batt_health = %s, bat_temp = %d, bat_volt = %d, bat_capacity=%d, ICL = 0x%x, FV_reg=0x%x\n",
 			__func__, state, health_type[bat_health], bat_temp,
 			bat_volt, bat_capacity, ICL_reg, FV_reg);
 
@@ -3735,7 +3736,7 @@ void jeita_rule(void)
 		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P350;
 
 		/* reg=1061 */
-		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_1400MA;
+		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_1500MA;
 
 		rc = SW_recharge(smbchg_dev);
 		if (rc < 0)
@@ -3750,7 +3751,7 @@ void jeita_rule(void)
 		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P350;
 
 		/* reg=1061 */
-		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_2000MA;
+		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_2850MA;
 
 		rc = SW_recharge(smbchg_dev);
 		if (rc < 0)
@@ -3936,7 +3937,7 @@ void asus_chg_flow_work(struct work_struct *work)
 				__func__);
 
 		/* reg=1370 bit7-bit0 */
-		set_icl = ICL_1000mA;
+		set_icl = ICL_2000mA;
 
 		rc = smblib_masked_write(smbchg_dev,
 						USBIN_CURRENT_LIMIT_CFG_REG,
@@ -4054,7 +4055,7 @@ void asus_adapter_adc_work(struct work_struct *work)
 	case ASUS_200K:
 	case PB:
 	case OTHERS:
-		usb_max_current = ICL_2000mA;
+		usb_max_current = ICL_2850mA;
 		break;
 
 	case ADC_NOT_READY:
