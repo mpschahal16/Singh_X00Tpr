@@ -104,6 +104,7 @@ extern int charger_limit_value;
 static bool asus_flow_processing;
 int asus_get_prop_batt_temp(struct smb_charger *chg);
 int asus_get_prop_batt_volt(struct smb_charger *chg);
+int asus_get_prop_charging_current(struct smb_charger *chg);
 int asus_get_prop_batt_capacity(struct smb_charger *chg);
 int asus_get_prop_batt_health(struct smb_charger *chg);
 int asus_get_prop_usb_present(struct smb_charger *chg);
@@ -3371,6 +3372,17 @@ int asus_get_prop_batt_volt(struct smb_charger *chg)
 	return volt_val.intval;
 }
 
+int asus_get_prop_charging_current(struct smb_charger *chg)
+{
+	union power_supply_propval current_val = {0, };
+	int rc;
+
+	rc = smblib_get_prop_from_bms(chg, POWER_SUPPLY_PROP_CURRENT_NOW,
+					&current_val);
+
+	return current_val.intval;
+}
+
 int asus_get_prop_batt_capacity(struct smb_charger *chg)
 {
 	union power_supply_propval capacity_val = {0, };
@@ -3694,6 +3706,7 @@ void jeita_rule(void)
 	int bat_temp;
 	int bat_health;
 	int bat_capacity;
+	int charging_current;
 	u8 charging_enable;
 	u8 FV_CFG_reg_value;
 	u8 FCC_reg_value;
@@ -3746,11 +3759,12 @@ void jeita_rule(void)
 	}
 
 	bat_volt = asus_get_prop_batt_volt(smbchg_dev);
+	charging_current = asus_get_prop_charging_current(smbchg_dev);
 	bat_capacity = asus_get_prop_batt_capacity(smbchg_dev);
 	state = smbchg_jeita_judge_state(state, bat_temp);
-	printk("%s: state=%d, batt_health = %s, bat_temp = %d, bat_volt = %d, bat_capacity=%d, ICL = 0x%x, FV_reg=0x%x\n",
+	printk("%s: state=%d, batt_health = %s, bat_temp = %d, bat_volt = %d,charg_current = %d, bat_capacity=%d, ICL = 0x%x, FV_reg=0x%x\n",
 			__func__, state, health_type[bat_health], bat_temp,
-			bat_volt, bat_capacity, ICL_reg, FV_reg);
+			bat_volt,charging_current, bat_capacity, ICL_reg, FV_reg);
 
 	switch (state) {
 	case JEITA_STATE_LESS_THAN_0:
