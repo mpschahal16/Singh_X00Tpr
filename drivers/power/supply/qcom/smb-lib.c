@@ -59,6 +59,19 @@
 	} while (0)
 
 #ifdef CONFIG_MACH_ASUS_X00T
+
+/*
+charge_mode	:	SMBCHG_FAST_CHG_CURRENT_VALUE
+0			:	2000MA
+1			:	2050MA
+2			:	2500MA
+3			:	2850MA
+4			:	3000MA
+other		:	2000MA
+*/
+static unsigned int charge_mode = 0;
+module_param(charge_mode, uint, S_IWUSR | S_IRUGO);
+
 extern struct smb_charger *smbchg_dev;
 extern struct timespec last_jeita_time;
 static struct alarm bat_alarm;
@@ -3754,8 +3767,26 @@ void jeita_rule(void)
 		FV_CFG_reg_value = SMBCHG_FLOAT_VOLTAGE_VALUE_4P350;
 
 		/* reg=1061 */
-		FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_2850MA;
-
+		switch (charge_mode) {
+				case 0:
+					FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_2000MA;
+					break;
+				case 1:
+					FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_2050MA;
+					break;
+				case 2:
+					FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_2500MA;
+					break;
+				case 3:
+					FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_2850MA;
+					break;
+				case 4:
+					FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_3000MA;
+					break;
+				default:
+					FCC_reg_value = SMBCHG_FAST_CHG_CURRENT_VALUE_2000MA;
+					break;
+			}
 		rc = SW_recharge(smbchg_dev);
 		if (rc < 0)
 			pr_err("%s: SW_recharge failed rc = %d\n", __func__,
