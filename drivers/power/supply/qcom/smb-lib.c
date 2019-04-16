@@ -3984,7 +3984,8 @@ void asus_chg_flow_work(struct work_struct *work)
 				__func__);
 
 		/* reg=1370 bit7-bit0 */
-		set_icl = ICL_2000mA;
+
+		set_icl = ICL_1500mA;
 
 		rc = smblib_masked_write(smbchg_dev,
 						USBIN_CURRENT_LIMIT_CFG_REG,
