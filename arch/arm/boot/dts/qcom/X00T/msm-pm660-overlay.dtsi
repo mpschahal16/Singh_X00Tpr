@@ -62,6 +62,8 @@
 
 &pm660_charger {
 	qcom,chg-alert-vadc = <&pm660_vadc>;
+	ADC_SW_EN-gpios59 = <&tlmm 71 0x0>;
+	ADCPWREN_PMI_GP1-gpios34 = <&tlmm 3 0x0>;
 	qcom,micro-usb;
 	qcom,fcc-max-ua = <1000000>;
 	qcom,fv-max-uv = <4350000>;
