@@ -14,6 +14,7 @@
 };
 
 &pm660_gpios {
+
 	gpio@c200 {
 		qcom,mode = <3>; /* Analog Pass Through */
 		qcom,pull = <5>; /* Input No pull */
@@ -23,9 +24,7 @@
 
 		/delete-property/ qcom,out-strength;
 	};
-};
 
-&pm660_gpios {
 	gpio@cb00 {
 		status = "ok";
 		qcom,master-en = <0>;
