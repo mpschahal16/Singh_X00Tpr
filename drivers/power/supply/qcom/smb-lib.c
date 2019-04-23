@@ -69,7 +69,7 @@ charge_mode	:	SMBCHG_FAST_CHG_CURRENT_VALUE
 4			:	3000MA
 other		:	2000MA
 */
-static unsigned int charge_mode = 0;
+static unsigned int charge_mode = 1;
 module_param(charge_mode, uint, S_IWUSR | S_IRUGO);
 
 /*
@@ -82,7 +82,7 @@ adapter_ceeling_current	:	ICL VALUE
 5						:	1000MA
 other					:	2000MA
 */
-static unsigned int adapter_ceeling_current = 0;
+static unsigned int adapter_ceeling_current = 2;
 module_param(adapter_ceeling_current, uint, S_IWUSR | S_IRUGO);
 
 extern struct smb_charger *smbchg_dev;
@@ -4154,7 +4154,7 @@ void asus_adapter_adc_work(struct work_struct *work)
 	else
 		pr_debug("%s: Pull low USBSW_S\n", __func__);
 
-	pr_debug("%s: ASUS_ADAPTER_ID = %s, setting mA = 0x%x\n", __func__,
+	printk("%s: ASUS_ADAPTER_ID = %s, setting mA = 0x%x\n", __func__,
 			asus_id[ASUS_ADAPTER_ID], usb_max_current);
 
 	/* Set current:
