@@ -2508,6 +2508,8 @@ static inline void memalloc_noio_restore(unsigned int flags)
 #define PFA_LMK_WAITING  3      /* Lowmemorykiller is waiting */
 #define PFA_SPEC_SSB_DISABLE		4	/* Speculative Store Bypass disabled */
 #define PFA_SPEC_SSB_FORCE_DISABLE	5	/* Speculative Store Bypass force disabled*/
+#define PFA_SPEC_IB_DISABLE		6	/* Indirect branch speculation restricted */
+#define PFA_SPEC_IB_FORCE_DISABLE	7	/* Indirect branch speculation permanently restricted */
 
 
 #define TASK_PFA_TEST(name, func)					\
@@ -3059,14 +3061,19 @@ extern struct mm_struct * mm_alloc(void);
 
 /* mmdrop drops the mm and the page tables */
 extern void __mmdrop(struct mm_struct *);
-static inline void mmdrop(struct mm_struct * mm)
+static inline void mmdrop(struct mm_struct *mm)
 {
 	if (unlikely(atomic_dec_and_test(&mm->mm_count)))
 		__mmdrop(mm);
 }
 
+static inline bool mmget_not_zero(struct mm_struct *mm)
+{
+	return atomic_inc_not_zero(&mm->mm_users);
+}
+
 /* mmput gets rid of the mappings and all user-space */
-extern int mmput(struct mm_struct *);
+extern void mmput(struct mm_struct *);
 /* same as above but performs the slow path from the async kontext. Can
  * be called from the atomic context as well
  */
